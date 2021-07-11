@@ -19,6 +19,8 @@ dependencies:
   flutter_svg:
   google_sign_in: ^5.0.4
   http:
+  fluttertoast: ^8.0.7
+  intl: ^0.17.0
 
 
   cupertino_icons: ^1.0.2

@@ -9,7 +9,7 @@ class AppUser {
   bool? isPlaying;
   bool? isGamePaused;
   List? questionLists;
-  int? lastQuestion;
+  int? lastQuestionPosition;
   List? scoreHistory;
   int? currentScore;
 
@@ -19,7 +19,7 @@ class AppUser {
     this.isPlaying,
     this.isGamePaused,
     this.questionLists,
-    this.lastQuestion,
+    this.lastQuestionPosition,
     this.name,
     this.scoreHistory,
     this.currentScore,
@@ -38,7 +38,7 @@ class AppUser {
         questionLists!.add(new Question.fromJson(v));
       });
     }
-    lastQuestion = json['lastQuestion'];
+    lastQuestionPosition = json['lastQuestionPosition'];
     if (json['scoreHistory'] != null) {
       scoreHistory = <Score>[];
       json['scoreHistory'].forEach((v) {
@@ -59,7 +59,7 @@ class AppUser {
       data['gameQuestions'] =
           this.questionLists!.map((v) => v.toJson()).toList();
     }
-    data['lastQuestion'] = this.lastQuestion;
+    data['lastQuestionPosition'] = this.lastQuestionPosition;
     if (this.scoreHistory != null) {
       data['scoreHistory'] = this.scoreHistory!.map((v) => v.toJson()).toList();
     }

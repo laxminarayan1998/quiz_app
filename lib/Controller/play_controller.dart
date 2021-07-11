@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_app/Controller/auth_controller.dart';
+import 'package:quiz_app/Dashboard%20Screen/dashboard_screen.dart';
 import 'package:quiz_app/Model/question.dart';
+import 'package:quiz_app/enum/Answer.dart';
 
 class PlayController extends GetxController {
   final AuthController authController = Get.find();
@@ -21,6 +23,7 @@ class PlayController extends GetxController {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
+      celebritiesList.clear();
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
       final celebrities = jsonResponse['results'] as List;
 
@@ -48,6 +51,7 @@ class PlayController extends GetxController {
                 .toList(),
           },
         );
+
         celebrities.forEach(
           (celeb) {
             authController.user.value.questionLists!.add(
@@ -76,21 +80,70 @@ class PlayController extends GetxController {
     }
   }
 
-  void writeQuestionsDataInDb() async {
+  Future<void> writeQuestionsDataInDb(Answer answer) async {
     await databaseReference
         .collection('Users')
         .doc(authController.user.value.id)
         .update(
       {
-        'currentScore': FieldValue.increment(1),
+        'currentScore': answer == Answer.Correct
+            ? (authController.currentQuestionPosition.value !=
+                    authController.user.value.questionLists!.length - 1)
+                ? FieldValue.increment(1)
+                : FieldValue.increment(0)
+            : FieldValue.increment(0),
         'lastQuestionPosition':
             authController.currentQuestionPosition.value + 1,
       },
     ).then(
       (value) => {
-        authController.user.value.currentScore =
-            authController.user.value.currentScore! + 1,
-        authController.user.refresh()
+        authController.user.value.currentScore = answer == Answer.Correct
+            ? authController.user.value.currentScore! + 1
+            : authController.user.value.currentScore!,
+        isOptionClicked.value = false,
+        authController.currentQuestionPosition.value =
+            (authController.currentQuestionPosition.value !=
+                    authController.user.value.questionLists!.length - 1)
+                ? authController.currentQuestionPosition.value + 1
+                : authController.currentQuestionPosition.value,
+        authController.user.refresh(),
+      },
+    );
+  }
+
+  Future<void> resetUserGame() async {
+    await databaseReference
+        .collection('Users')
+        .doc(authController.user.value.id)
+        .update(
+      {
+        'scoreHistory': FieldValue.arrayUnion(
+          [
+            {
+              'score': authController.user.value.currentScore,
+              'timestamp': DateTime.now(),
+            }
+          ],
+        )
+      },
+    );
+
+    await databaseReference
+        .collection('Users')
+        .doc(authController.user.value.id)
+        .update(
+      {
+        'currentScore': 0,
+        'lastQuestionPosition': 0,
+        'gameQuestions': [],
+      },
+    ).then(
+      (value) => {
+        isOptionClicked.value = false,
+        authController.user.value.currentScore = 0,
+        authController.currentQuestionPosition.value = 0,
+        authController.user.value.questionLists!.clear(),
+        authController.user.refresh(),
       },
     );
   }

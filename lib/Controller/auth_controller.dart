@@ -37,7 +37,7 @@ class AuthController extends GetxController {
         name: userData.user!.displayName,
         isGamePaused: false,
         isPlaying: false,
-        lastQuestion: 0,
+        lastQuestionPosition: 0,
         questionLists: [],
         scoreHistory: [],
         currentScore: 0,
@@ -82,7 +82,7 @@ class AuthController extends GetxController {
       id: userData.data()!['id'],
       isGamePaused: userData.data()!['isGamePaused'],
       isPlaying: userData.data()!['isPlaying'],
-      lastQuestion: userData.data()!['lastQuestion'],
+      lastQuestionPosition: userData.data()!['lastQuestionPosition'],
       name: userData.data()!['name'],
       scoreHistory: userData.data()!['scoreHistory'],
       currentScore: userData.data()!['currentScore'],
@@ -110,6 +110,8 @@ class AuthController extends GetxController {
       List list = element['incorrect_answers'];
       list.shuffle();
     });
+
+    currentQuestionPosition.value = user.value.lastQuestionPosition!;
 
     // playController.questionList.value = user.value.questionLists!;
 

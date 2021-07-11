@@ -1,13 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:quiz_app/Controller/auth_controller.dart';
 import 'package:quiz_app/Controller/play_controller.dart';
+import 'package:quiz_app/Controller/result_controller.dart';
 import 'package:quiz_app/Play%20Screen/play_screen.dart';
 
 import '../constants.dart';
 import '../main_button.dart';
 
 class DashboardScreen extends StatelessWidget {
+  final ResultController resultController = Get.put(ResultController());
   final PlayController playController = Get.find();
 
   DashboardScreen({Key? key}) : super(key: key);
@@ -16,7 +21,7 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: FutureBuilder(
-      future: playController.getQuestionFromApi(),
+      future: resultController.getScores(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -32,7 +37,9 @@ class DashboardScreen extends StatelessWidget {
               ),
               Flexible(
                 flex: 2,
-                child: ScoreBoard(),
+                child: ScoreBoard(
+                  scores: resultController.scoreList,
+                ),
               )
             ],
           ),
@@ -43,7 +50,8 @@ class DashboardScreen extends StatelessWidget {
 }
 
 class PlayBoard extends StatelessWidget {
-  const PlayBoard({
+  final AuthController authController = Get.find();
+  PlayBoard({
     Key? key,
   }) : super(key: key);
 
@@ -58,11 +66,15 @@ class PlayBoard extends StatelessWidget {
         ),
         SizedBox(
           width: Get.width * .8,
-          child: DefaultButton(
-            text: 'PLAY',
-            onPress: () {
-              Get.to(() => PlayScreen());
-            },
+          child: Obx(
+            () => DefaultButton(
+              text: authController.currentQuestionPosition > 0
+                  ? 'RESUME'
+                  : 'PLAY',
+              onPress: () {
+                Get.to(() => PlayScreen());
+              },
+            ),
           ),
         ),
       ],
@@ -71,8 +83,10 @@ class PlayBoard extends StatelessWidget {
 }
 
 class ScoreBoard extends StatelessWidget {
+  final List? scores;
   const ScoreBoard({
     Key? key,
+    this.scores,
   }) : super(key: key);
 
   @override
@@ -85,7 +99,7 @@ class ScoreBoard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'SCORE HISTORY (10)',
+              'SCORE HISTORY (${scores!.length})',
               style: TextStyle(
                 fontSize: 12,
                 color: kSubTextColorLight,
@@ -94,9 +108,13 @@ class ScoreBoard extends StatelessWidget {
             ),
             SizedBox(height: defaultPadding),
             ...List.generate(
-              7,
-              (index) => ScoreWidget(),
-            ).toList()
+              scores!.length,
+              (index) => ScoreWidget(
+                index: index + 1,
+                score: scores![index]['score'],
+                time: scores![index]['timestamp'],
+              ),
+            ).toList().reversed
           ],
         ),
       ),
@@ -105,8 +123,14 @@ class ScoreBoard extends StatelessWidget {
 }
 
 class ScoreWidget extends StatelessWidget {
+  final int? index;
+  final int? score;
+  final Timestamp? time;
   const ScoreWidget({
     Key? key,
+    this.score,
+    this.time,
+    this.index,
   }) : super(key: key);
 
   @override
@@ -131,7 +155,7 @@ class ScoreWidget extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            '1.',
+            '$index.',
             style: TextStyle(
               fontSize: 16,
               color: kSubTextColorLight,
@@ -139,7 +163,7 @@ class ScoreWidget extends StatelessWidget {
           ),
           SizedBox(width: 8),
           Text(
-            '8 Points',
+            '$score Points',
             style: TextStyle(
               fontSize: 16,
               color: kTextColorLight,
@@ -147,7 +171,7 @@ class ScoreWidget extends StatelessWidget {
           ),
           Spacer(),
           Text(
-            '12 Jul',
+            '${DateFormat('dd MMM').format(DateTime.parse(time!.toDate().toString()))}',
             style: TextStyle(
               fontSize: 16,
               color: kTextColorLight,

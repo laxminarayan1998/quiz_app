@@ -1,11 +1,12 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quiz_app/Controller/auth_controller.dart';
 import 'package:quiz_app/Controller/play_controller.dart';
+import 'package:quiz_app/Dashboard%20Screen/dashboard_screen.dart';
+import 'package:quiz_app/Result%20Screen/result_screen.dart';
 import 'package:quiz_app/constants.dart';
+import 'package:quiz_app/enum/Answer.dart';
+import 'package:quiz_app/enum/utils.dart';
 import 'package:quiz_app/main_button.dart';
 import 'package:quiz_app/size_config.dart';
 
@@ -18,6 +19,7 @@ class PlayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -52,138 +54,178 @@ class PlayScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Column(
-        children: [
-          LinearProgressIndicator(
-            backgroundColor: kSubTextColorLight.withOpacity(.4),
-            valueColor: AlwaysStoppedAnimation<Color>(yellowColor),
-            value: .6,
-          ),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: defaultPadding,
-              ),
-              child: Obx(
-                () => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Spacer(),
-                    QuestionCounter(),
-                    Divider(
-                      color: kTextColorLight.withOpacity(.4),
+      body: FutureBuilder(
+        future: playController.getQuestionFromApi(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Obx(
+            () => Column(
+              children: [
+                TweenAnimationBuilder(
+                  tween: Tween<double>(
+                      begin: 0,
+                      end: authController.currentQuestionPosition.value *
+                          (1 / 10)),
+                  duration: Duration(milliseconds: 300),
+                  builder: (context, double value, child) =>
+                      LinearProgressIndicator(
+                    backgroundColor: kSubTextColorLight.withOpacity(.4),
+                    valueColor: AlwaysStoppedAnimation<Color>(yellowColor),
+                    value: value,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: defaultPadding,
                     ),
-                    Spacer(),
-                    Question(
-                      question: authController.user.value.questionLists![
-                              authController.currentQuestionPosition.value]
-                          ['question'],
-                    ),
-                    Spacer(
-                      flex: 3,
-                    ),
-                    ...List.generate(
-                      authController
-                          .user
-                          .value
-                          .questionLists![authController.currentQuestionPosition
-                              .value]['incorrect_answers']
-                          .length,
-                      (index) => OptionWidget(
-                        isCorrect: authController.user.value.questionLists![
-                                authController.currentQuestionPosition.value]
-                            ['incorrect_answers'][index]['status'],
-                        onPress: () {
-                          if (!playController.isOptionClicked.value) {
-                            final correctAns =
-                                authController.user.value.questionLists![
-                                    authController.currentQuestionPosition
-                                        .value]['correct_answer'];
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Spacer(),
+                        QuestionCounter(),
+                        Divider(
+                          color: kTextColorLight.withOpacity(.4),
+                        ),
+                        Spacer(),
+                        Question(
+                          question: authController.user.value.questionLists![
+                                  authController.currentQuestionPosition.value]
+                              ['question'],
+                        ),
+                        Spacer(
+                          flex: 3,
+                        ),
+                        ...List.generate(
+                          authController
+                              .user
+                              .value
+                              .questionLists![authController
+                                  .currentQuestionPosition
+                                  .value]['incorrect_answers']
+                              .length,
+                          (index) => OptionWidget(
+                            isCorrect: authController.user.value.questionLists![
+                                    authController
+                                        .currentQuestionPosition.value]
+                                ['incorrect_answers'][index]['status'],
+                            onPress: () {
+                              if (!playController.isOptionClicked.value) {
+                                final correctAns =
+                                    authController.user.value.questionLists![
+                                        authController.currentQuestionPosition
+                                            .value]['correct_answer'];
 
-                            final selectedAns =
-                                authController.user.value.questionLists![
-                                        authController
-                                            .currentQuestionPosition.value]
-                                    ['incorrect_answers'][index]['option'];
+                                final selectedAns =
+                                    authController.user.value.questionLists![
+                                            authController
+                                                .currentQuestionPosition.value]
+                                        ['incorrect_answers'][index]['option'];
 
-                            if (correctAns == selectedAns) {
-                              authController.user.value.questionLists![
-                                  authController.currentQuestionPosition
-                                      .value]['result'] = 'CORRECT';
-
-                              authController.user.value.questionLists![
-                                      authController.currentQuestionPosition
-                                          .value]['incorrect_answers'][index]
-                                  ['status'] = 'CORRECT';
-
-                              authController.user.value.questionLists![
-                                  authController.currentQuestionPosition
-                                      .value]['result'] = 'CORRECT';
-                            } else {
-                              authController.user.value.questionLists![
-                                  authController.currentQuestionPosition
-                                      .value]['result'] = 'WRONG';
-
-                              authController.user.value.questionLists![
-                                      authController.currentQuestionPosition
-                                          .value]['incorrect_answers'][index]
-                                  ['status'] = 'WRONG';
-
-                              authController.user.value.questionLists![
-                                  authController.currentQuestionPosition
-                                      .value]['result'] = 'WRONG';
-
-                              List list =
+                                if (correctAns == selectedAns) {
                                   authController.user.value.questionLists![
                                       authController.currentQuestionPosition
-                                          .value]['incorrect_answers'];
+                                          .value]['result'] = 'CORRECT';
 
-                              int correctAnsIndex = list.indexWhere(
-                                  (element) => element['option'] == correctAns);
+                                  authController.user.value.questionLists![
+                                          authController.currentQuestionPosition
+                                              .value]['incorrect_answers']
+                                      [index]['status'] = 'CORRECT';
 
-                              authController.user.value.questionLists![
+                                  authController.user.value.questionLists![
                                       authController.currentQuestionPosition
-                                          .value]['incorrect_answers']
-                                  [correctAnsIndex]['status'] = 'CORRECT';
-                            }
+                                          .value]['result'] = 'CORRECT';
+                                } else {
+                                  authController.user.value.questionLists![
+                                      authController.currentQuestionPosition
+                                          .value]['result'] = 'WRONG';
 
-                            authController.user.refresh();
-                          }
+                                  authController.user.value.questionLists![
+                                          authController.currentQuestionPosition
+                                              .value]['incorrect_answers']
+                                      [index]['status'] = 'WRONG';
 
-                          playController.isOptionClicked.value = true;
-                        },
-                        text: authController.user.value.questionLists![
-                                authController.currentQuestionPosition.value]
-                            ['incorrect_answers'][index]['option'],
-                      ),
-                    ),
-                    SizedBox(height: defaultPadding * 2),
-                    Align(
-                      alignment: Alignment.center,
-                      child: SizedBox(
-                        width: Get.width * .4,
-                        child: DefaultButton(
-                          text: 'NEXT',
-                          onPress: () {
-                            playController.writeQuestionsDataInDb();
-                            // print(authController.user.value.currentScore!);
+                                  authController.user.value.questionLists![
+                                      authController.currentQuestionPosition
+                                          .value]['result'] = 'WRONG';
 
-                            playController.isOptionClicked.value = false;
+                                  List list =
+                                      authController.user.value.questionLists![
+                                          authController.currentQuestionPosition
+                                              .value]['incorrect_answers'];
 
-                            authController.currentQuestionPosition.value =
-                                authController.currentQuestionPosition.value +
-                                    1;
-                          },
+                                  int correctAnsIndex = list.indexWhere(
+                                      (element) =>
+                                          element['option'] == correctAns);
+
+                                  authController.user.value.questionLists![
+                                          authController.currentQuestionPosition
+                                              .value]['incorrect_answers']
+                                      [correctAnsIndex]['status'] = 'CORRECT';
+                                }
+
+                                authController.user.refresh();
+                              }
+
+                              playController.isOptionClicked.value = true;
+                            },
+                            text: authController.user.value.questionLists![
+                                    authController
+                                        .currentQuestionPosition.value]
+                                ['incorrect_answers'][index]['option'],
+                          ),
                         ),
-                      ),
+                        SizedBox(height: defaultPadding * 2),
+                        Align(
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: Get.width * .4,
+                            child: DefaultButton(
+                              text: 'NEXT',
+                              onPress: () async {
+                                if (authController
+                                        .currentQuestionPosition.value <
+                                    authController
+                                            .user.value.questionLists!.length -
+                                        1) {
+                                  if (authController.user.value.questionLists![
+                                          authController.currentQuestionPosition
+                                              .value]['result'] !=
+                                      'NOT PLAYED') {
+                                    await playController.writeQuestionsDataInDb(
+                                      authController.user.value.questionLists![
+                                                  authController
+                                                      .currentQuestionPosition
+                                                      .value]['result'] ==
+                                              'CORRECT'
+                                          ? Answer.Correct
+                                          : Answer.Wrong,
+                                    );
+                                  } else {
+                                    Utility.showToast(
+                                        msg: 'Please select an option');
+                                  }
+                                } else {
+                                  Get.offAll(() => ResultScreen());
+                                  await playController.resetUserGame();
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: defaultPadding),
+                      ],
                     ),
-                    SizedBox(height: defaultPadding),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          )
-        ],
+          );
+        },
       ),
     );
   }
