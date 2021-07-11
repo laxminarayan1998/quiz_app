@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "71600626385",
+    "project_id": "job-assessment-952ba",
+    "storage_bucket": "job-assessment-952ba.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71600626385:android:8dcf531373a5a1c8b2c3f0",
+        "android_client_info": {
+          "package_name": "com.example.quiz_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "71600626385-723h7aa4i6gacish8nmdhf6sfdjbi9le.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDF5-ZqZf2y4W1yk-BVNwO6MXuDuLby-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "71600626385-723h7aa4i6gacish8nmdhf6sfdjbi9le.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

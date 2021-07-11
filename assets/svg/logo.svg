@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="147" height="233.5" viewBox="0 0 147 233.5">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#efb848"/>
+      <stop offset="1" stop-color="#782e24"/>
+    </linearGradient>
+  </defs>
+  <g id="Group_16" data-name="Group 16" transform="translate(-141 -142.5)">
+    <path id="Icon_awesome-question" data-name="Icon awesome-question" d="M60.117,0C33.733,0,16.643,10.81,3.227,30.089A7.942,7.942,0,0,0,4.938,40.955L19.2,51.767A7.933,7.933,0,0,0,30.189,50.4c8.28-10.373,14.422-16.345,27.355-16.345,10.169,0,22.747,6.545,22.747,16.406,0,7.455-6.154,11.283-16.195,16.912-11.709,6.565-27.2,14.735-27.2,35.172v3.235a7.933,7.933,0,0,0,7.933,7.933H68.782a7.933,7.933,0,0,0,7.933-7.933v-1.908c0-14.167,41.407-14.757,41.407-53.1C118.123,21.9,88.174,0,60.117,0ZM56.8,123.447a22.9,22.9,0,1,0,22.9,22.9A22.924,22.924,0,0,0,56.8,123.447Z" transform="translate(154.039 144)" stroke="#fff" stroke-width="3" fill="url(#linear-gradient)"/>
+    <text id="QUIZ_APP" data-name="QUIZ APP" transform="translate(141 365)" fill="#eee" font-size="32" font-family="Poppins-Bold, Poppins" font-weight="700"><tspan x="0" y="0">QUIZ APP</tspan></text>
+  </g>
+</svg>
