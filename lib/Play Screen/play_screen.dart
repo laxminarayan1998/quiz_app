@@ -10,6 +10,10 @@ import 'package:quiz_app/enum/utils.dart';
 import 'package:quiz_app/main_button.dart';
 import 'package:quiz_app/size_config.dart';
 
+import 'Widgets/option_widget.dart';
+import 'Widgets/question.dart';
+import 'Widgets/question_counter.dart';
+
 class PlayScreen extends StatefulWidget {
   PlayScreen({Key? key}) : super(key: key);
 
@@ -280,18 +284,31 @@ class _PlayScreenState extends State<PlayScreen> with WidgetsBindingObserver {
                                           msg: 'Please select an option');
                                     }
                                   } else {
-                                    await playController.writeLastQuestionInDb(
-                                      authController.user.value.questionLists![
-                                                  authController
-                                                      .currentQuestionPosition
-                                                      .value]['result'] ==
-                                              'CORRECT'
-                                          ? Answer.Correct
-                                          : Answer.Wrong,
-                                    );
-                                    playController.setIfUserIsPlaying(false);
-                                    Get.offAll(() => ResultScreen());
-                                    await playController.resetUserGame();
+                                    if (authController
+                                                .user.value.questionLists![
+                                            authController
+                                                .currentQuestionPosition
+                                                .value]['result'] !=
+                                        'NOT PLAYED') {
+                                      await playController
+                                          .writeLastQuestionInDb(
+                                        authController.user.value
+                                                        .questionLists![
+                                                    authController
+                                                        .currentQuestionPosition
+                                                        .value]['result'] ==
+                                                'CORRECT'
+                                            ? Answer.Correct
+                                            : Answer.Wrong,
+                                      );
+
+                                      playController.setIfUserIsPlaying(false);
+                                      Get.offAll(() => ResultScreen());
+                                      await playController.resetUserGame();
+                                    } else {
+                                      Utility.showToast(
+                                          msg: 'Please select an option');
+                                    }
                                   }
 
                                   print(
@@ -310,135 +327,6 @@ class _PlayScreenState extends State<PlayScreen> with WidgetsBindingObserver {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class Question extends StatelessWidget {
-  final String? question;
-  Question({
-    Key? key,
-    this.question,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      '$question',
-      style: TextStyle(
-        fontSize: getProportionateScreenWidth(22),
-        color: kTextColorLight,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-}
-
-class QuestionCounter extends StatelessWidget {
-  final AuthController authController = Get.find();
-  final PlayController playController = Get.find();
-
-  QuestionCounter({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text.rich(
-      TextSpan(
-        style: TextStyle(
-          fontSize: 32,
-          color: const Color(0xff969696),
-        ),
-        children: [
-          TextSpan(
-            text: 'Q',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextSpan(
-            text: 'uestion ',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextSpan(
-            text: '${authController.currentQuestionPosition.value + 1}',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          TextSpan(
-            text: '/${authController.user.value.questionLists!.length}',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class OptionWidget extends StatelessWidget {
-  final AuthController authController = Get.find();
-  final String? text;
-  final Function()? onPress;
-  final String? isCorrect;
-  OptionWidget({
-    Key? key,
-    this.text,
-    this.onPress,
-    this.isCorrect,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPress,
-      child: Container(
-        margin: EdgeInsets.only(top: defaultPadding),
-        padding: EdgeInsets.symmetric(
-            vertical: defaultPadding / 1.2, horizontal: defaultPadding * 2),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          border: Border.all(
-            width: 2.0,
-            color: isCorrect! == ''
-                ? mainColor.withOpacity(.6)
-                : isCorrect! == 'CORRECT'
-                    ? Colors.green
-                    : Colors.red,
-          ),
-        ),
-        child: Row(
-          children: [
-            Text(
-              '$text',
-              style: TextStyle(
-                fontSize: getProportionateScreenWidth(12),
-                color: kTextColorLight,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            Spacer(),
-            Container(
-              padding: EdgeInsets.all(defaultPadding / 2),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                // color: mainColor,
-                border: Border.all(
-                  width: 2.0,
-                  color: mainColor,
-                ),
-              ),
-            )
-          ],
         ),
       ),
     );

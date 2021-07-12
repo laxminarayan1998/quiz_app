@@ -13,7 +13,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Timer(
       Duration(seconds: 3),
-      () => Get.offAll(() => LoginScreen()),
+      () => Get.off(() => LoginScreen()),
     );
     return Scaffold(
       backgroundColor: kBgColor,

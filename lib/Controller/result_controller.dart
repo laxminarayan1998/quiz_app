@@ -27,6 +27,7 @@ class ResultController extends GetxController {
                 ),
               },
             ),
+            scoreList.value = scoreList.reversed.toList(),
             scoreList.refresh(),
           },
         );

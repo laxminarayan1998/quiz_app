@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'constants.dart';
 
@@ -8,28 +9,7 @@ ThemeData theme() {
     fontFamily: "Poppins",
     appBarTheme: appBarTheme(),
     textTheme: textTheme(),
-    inputDecorationTheme: inputDecorationTheme(),
     visualDensity: VisualDensity.adaptivePlatformDensity,
-  );
-}
-
-InputDecorationTheme inputDecorationTheme() {
-  OutlineInputBorder outlineInputBorder = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
-    borderSide: BorderSide(color: Colors.transparent),
-    gapPadding: 10,
-  );
-  return InputDecorationTheme(
-    filled: true,
-    fillColor: Colors.white.withOpacity(0.20),
-    hintStyle: TextStyle(
-      color: Colors.white.withOpacity(.32),
-      fontWeight: FontWeight.normal,
-    ),
-    floatingLabelBehavior: FloatingLabelBehavior.always,
-    contentPadding: EdgeInsets.symmetric(horizontal: 22, vertical: 20),
-    enabledBorder: outlineInputBorder,
-    focusedBorder: outlineInputBorder,
   );
 }
 
@@ -47,6 +27,10 @@ AppBarTheme appBarTheme() {
     elevation: 0,
     brightness: Brightness.light,
     iconTheme: IconThemeData(color: Colors.black),
+    systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarIconBrightness: Brightness.light,
+      // statusBarColor: Colors.transparent,
+    ),
     textTheme: TextTheme(
       headline6: TextStyle(color: Color(0XFF8B8B8B), fontSize: 18),
     ),

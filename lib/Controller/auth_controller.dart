@@ -1,16 +1,11 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:quiz_app/Controller/play_controller.dart';
 import 'package:quiz_app/Dashboard%20Screen/dashboard_screen.dart';
-import 'package:quiz_app/Model/question.dart';
 import 'package:quiz_app/Model/user.dart';
 
 class AuthController extends GetxController {
-  // final PlayController playController = Get.find();
   var user = AppUser().obs;
   final databaseReference = FirebaseFirestore.instance;
 
@@ -31,6 +26,7 @@ class AuthController extends GetxController {
         await FirebaseAuth.instance.signInWithCredential(credential);
 
     if (userData.additionalUserInfo!.isNewUser) {
+      // If the user is first time
       user.value = AppUser(
         email: userData.user!.email,
         id: userData.user!.uid,
@@ -49,6 +45,7 @@ class AuthController extends GetxController {
         },
       );
     } else {
+      // If the user exists then the user's data will be fetched from DB.
       getUserDataFromDB(userData.user!.uid)
           .then((value) => Get.to(() => DashboardScreen()));
     }
@@ -74,8 +71,6 @@ class AuthController extends GetxController {
 
   Future<void> getUserDataFromDB(String? id) async {
     final userData = await databaseReference.collection('Users').doc(id).get();
-
-    // user.value = AppUser.fromJson(userData.data()!);
 
     user.value = AppUser(
       email: userData.data()!['email'],
@@ -106,15 +101,15 @@ class AuthController extends GetxController {
           .toList(),
     );
 
+    // ? suffling options of the question
     user.value.questionLists!.forEach((element) {
       List list = element['incorrect_answers'];
       list.shuffle();
     });
 
+    // ? last position of the question, if the user left playing the
+    // ? last game. When resumes the game will start from the postion
+    // ? where the user left last time.
     currentQuestionPosition.value = user.value.lastQuestionPosition!;
-
-    // playController.questionList.value = user.value.questionLists!;
-
-    // playController.questionList.refresh();
   }
 }

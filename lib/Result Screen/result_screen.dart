@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:quiz_app/Controller/auth_controller.dart';
 import 'package:quiz_app/Dashboard%20Screen/dashboard_screen.dart';
-import 'package:quiz_app/main_button.dart';
 
 import '../constants.dart';
 

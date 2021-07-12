@@ -3,12 +3,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:quiz_app/Controller/auth_controller.dart';
 import 'package:quiz_app/Controller/play_controller.dart';
-import 'package:quiz_app/Dashboard%20Screen/dashboard_screen.dart';
+import 'package:quiz_app/Controller/result_controller.dart';
 import 'package:quiz_app/main_button.dart';
 
 class LoginScreen extends StatelessWidget {
-  final AuthController authController = Get.put(AuthController());
-  final PlayController playController = Get.put(PlayController());
+  final AuthController authController =
+      Get.put(AuthController(), permanent: true);
+  final PlayController playController =
+      Get.put(PlayController(), permanent: true);
+  final ResultController resultController =
+      Get.put(ResultController(), permanent: true);
 
   LoginScreen({Key? key}) : super(key: key);
 

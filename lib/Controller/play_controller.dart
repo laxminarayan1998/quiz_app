@@ -124,7 +124,7 @@ class PlayController extends GetxController {
                     authController.user.value.questionLists!.length - 1)
                 ? authController.currentQuestionPosition.value + 1
                 : authController.currentQuestionPosition.value,
-        authController.user.refresh(),
+        // authController.user.refresh(),
       },
     );
   }
