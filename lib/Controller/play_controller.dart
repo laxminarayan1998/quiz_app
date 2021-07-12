@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:quiz_app/Controller/auth_controller.dart';
-import 'package:quiz_app/Dashboard%20Screen/dashboard_screen.dart';
 import 'package:quiz_app/Model/question.dart';
 import 'package:quiz_app/enum/Answer.dart';
 
@@ -80,6 +79,26 @@ class PlayController extends GetxController {
     }
   }
 
+  Future<void> writeLastQuestionInDb(Answer answer) async {
+    await databaseReference
+        .collection('Users')
+        .doc(authController.user.value.id)
+        .update(
+      {
+        'currentScore': answer == Answer.Correct
+            ? FieldValue.increment(1)
+            : FieldValue.increment(0),
+      },
+    ).then(
+      (value) => {
+        authController.user.value.currentScore = answer == Answer.Correct
+            ? authController.user.value.currentScore! + 1
+            : authController.user.value.currentScore!,
+        authController.user.refresh(),
+      },
+    );
+  }
+
   Future<void> writeQuestionsDataInDb(Answer answer) async {
     await databaseReference
         .collection('Users')
@@ -87,13 +106,12 @@ class PlayController extends GetxController {
         .update(
       {
         'currentScore': answer == Answer.Correct
-            ? (authController.currentQuestionPosition.value !=
-                    authController.user.value.questionLists!.length - 1)
-                ? FieldValue.increment(1)
-                : FieldValue.increment(0)
+            ? FieldValue.increment(1)
             : FieldValue.increment(0),
-        'lastQuestionPosition':
-            authController.currentQuestionPosition.value + 1,
+        'lastQuestionPosition': (authController.currentQuestionPosition.value !=
+                authController.user.value.questionLists!.length - 1)
+            ? authController.currentQuestionPosition.value + 1
+            : authController.currentQuestionPosition.value,
       },
     ).then(
       (value) => {
@@ -144,6 +162,17 @@ class PlayController extends GetxController {
         authController.currentQuestionPosition.value = 0,
         authController.user.value.questionLists!.clear(),
         authController.user.refresh(),
+      },
+    );
+  }
+
+  Future<void> setIfUserIsPlaying(bool? isPlaying) async {
+    await databaseReference
+        .collection('Users')
+        .doc(authController.user.value.id)
+        .update(
+      {
+        'isPlaying': isPlaying,
       },
     );
   }

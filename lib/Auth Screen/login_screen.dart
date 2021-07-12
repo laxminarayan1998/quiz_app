@@ -19,7 +19,10 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            SvgPicture.asset('assets/svg/logo.svg'),
+            Hero(
+              tag: 'logo',
+              child: SvgPicture.asset('assets/svg/logo.svg'),
+            ),
             SizedBox(
               width: Get.width * .8,
               child: DefaultButton(

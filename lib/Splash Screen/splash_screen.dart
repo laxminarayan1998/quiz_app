@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:quiz_app/Auth%20Screen/login_screen.dart';
 import 'package:quiz_app/constants.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -7,13 +11,20 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timer(
+      Duration(seconds: 3),
+      () => Get.offAll(() => LoginScreen()),
+    );
     return Scaffold(
       backgroundColor: kBgColor,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset('assets/svg/logo.svg'),
+            Hero(
+              tag: 'logo',
+              child: SvgPicture.asset('assets/svg/logo.svg'),
+            ),
           ],
         ),
       ),

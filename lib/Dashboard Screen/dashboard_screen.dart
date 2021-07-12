@@ -7,6 +7,7 @@ import 'package:quiz_app/Controller/auth_controller.dart';
 import 'package:quiz_app/Controller/play_controller.dart';
 import 'package:quiz_app/Controller/result_controller.dart';
 import 'package:quiz_app/Play%20Screen/play_screen.dart';
+import 'package:quiz_app/enum/utils.dart';
 
 import '../constants.dart';
 import '../main_button.dart';
@@ -14,6 +15,7 @@ import '../main_button.dart';
 class DashboardScreen extends StatelessWidget {
   final ResultController resultController = Get.put(ResultController());
   final PlayController playController = Get.find();
+  final AuthController authController = Get.find();
 
   DashboardScreen({Key? key}) : super(key: key);
 
@@ -51,6 +53,7 @@ class DashboardScreen extends StatelessWidget {
 
 class PlayBoard extends StatelessWidget {
   final AuthController authController = Get.find();
+  final PlayController playController = Get.find();
   PlayBoard({
     Key? key,
   }) : super(key: key);
@@ -71,8 +74,14 @@ class PlayBoard extends StatelessWidget {
               text: authController.currentQuestionPosition > 0
                   ? 'RESUME'
                   : 'PLAY',
-              onPress: () {
-                Get.to(() => PlayScreen());
+              onPress: () async {
+                print(authController.user.value.isPlaying);
+                if (!authController.user.value.isPlaying!) {
+                  await playController.setIfUserIsPlaying(true);
+                  Get.to(() => PlayScreen());
+                } else {
+                  Utility.showToast(msg: 'Game is in progress! Please wait.');
+                }
               },
             ),
           ),

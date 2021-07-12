@@ -106,15 +106,22 @@ class ResultScreen extends StatelessWidget {
                   SizedBox(
                     height: 50,
                   ),
-                  Text(
-                    '*Please wait you will be automatically redirected to home page.',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: kTextColorLight.withOpacity(.7),
-                      fontWeight: FontWeight.w300,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TweenAnimationBuilder(
+                      tween: Tween(begin: 5.0, end: 0.0),
+                      duration: Duration(seconds: 5),
+                      builder: (_, value, child) => Text(
+                        '*Please wait ${double.parse(value.toString()).toStringAsFixed(0)}s you will be automatically redirected to home page.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: kTextColorLight.withOpacity(.7),
+                          fontWeight: FontWeight.w300,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  )
+                  ),
                 ],
               ),
             ),
